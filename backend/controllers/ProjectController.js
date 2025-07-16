@@ -12,15 +12,28 @@ exports.getAllproject = catchAsyncError(async (req, res, next) => {
 })
 
 exports.createproject = catchAsyncError(async (req, res, next) => {
-    const { ProjectName,status,ProjectLeader, TeamMembers} = req.body;
+    const { ProjectName, status, ProjectLeader, TeamMembers } = req.body;
 
     const project = await project.create({
-        ProjectName,status,ProjectLeader,TeamMembers
+        ProjectName, status, ProjectLeader, TeamMembers
     });
 
     res.status(201).json({
         success: true,
         project
+    })
+})
+
+exports.getSingleProject = catchAsyncError(async (req, res, next) => {
+    const Project = await project.findById(req.params.id)
+    if (!Project) {
+        return next(
+            new ErrorHandler(`Project does not exist with Id: ${req.params.id}`)
+        );
+    }
+    res.status(200).json({
+        success: true,
+        Project
     })
 })
 
