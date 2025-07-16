@@ -1,7 +1,7 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const Ticket = require("../models/Ticket");
 const Ticket = require("../models/Ticket");
-const tickettype = require("../models/TicketType");
+const Notification = require("../models/Notification");
 const User = require("../models/User");
 const ErrorHandler = require("../utils/errorhandler");
 const sendEmail = require("../utils/sendEmail");
@@ -82,6 +82,22 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
       subject: `Ticket has been created`,
       message,
     });
+
+    await Notification.create({
+      UserId: assignee,
+      type: "assignment",
+      message: `You have been assigned to ticket: ${title}`,
+      TicketId: Tickets._id,
+      createdBy: creator,
+    })
+    const io = req.app.get("io")
+    if(io){
+      io.to(assignee).emit("notification",{
+        type: "assignment",
+        message: `You have been assigned to ticket: ${title}`,
+        ticketId: Tickets._id,
+      })
+    }
     res.status(201).json({
       success: true,
       Tickets

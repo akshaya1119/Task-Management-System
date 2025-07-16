@@ -1,6 +1,7 @@
 const app = require("./app");
 const connectDatabase = require("./config/database");
-
+const { server, io } = require('./socket'); // assuming you have a socket.js
+app.set("io", io);
 // Handling Uncaught Exception
 process.on("uncaughtException", (err) => {
   console.log(`Error: ${err.message}`);
