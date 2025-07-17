@@ -1,10 +1,11 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const Ticket = require("../models/Ticket");
-const Ticket = require("../models/Ticket");
 const Notification = require("../models/Notification");
 const User = require("../models/User");
 const ErrorHandler = require("../utils/errorhandler");
 const sendEmail = require("../utils/sendEmail");
+const ApiFeatures = require("../utils/apiFeatures");
+const comment = require("../models/comment");
 
 exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   const tickets = await Ticket.find();
@@ -12,6 +13,21 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     tickets,
+  })
+})
+
+exports.AdvancedSearch = catchAsyncError(async(req,res,next)=>{
+  const ticketApi = new ApiFeatures(Ticket.find(), res.query)
+  .search()
+  .filter();
+  const tickets = await ticketApi.query
+  const comments = new ApiFeatures(comment.find(), res.query)
+  .search()
+  .filter();
+  res.status(200).json({
+    success: true,
+    tickets,
+    comments
   })
 })
 
@@ -44,6 +60,7 @@ exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) =
   const MediumPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: medium })
   const HighPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: high })
   const OpenTickets = await Ticket.countDocuments({ assignee: userid, status: Open })
+  const InProgressTickets = await Ticket.countDocuments({assignee: userid, status: InProgress})
   const CompletedTickets = await Ticket.countDocuments({ assignee: userid, status: Completed })
   const PendingTickets = await Ticket.countDocuments({ assignee: userid, status: Pending })
 
@@ -54,6 +71,7 @@ exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) =
       MediumPriorityTickets,
       HighPriorityTickets,
       OpenTickets,
+      InProgressTickets,
       CompletedTickets,
       PendingTickets
     }

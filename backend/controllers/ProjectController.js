@@ -1,6 +1,8 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
 const project = require("../models/project");
+const ActivityLog = require("../models/ActivityLog")
 const ErrorHandler = require("../utils/errorhandler");
+const ApiFeatures = require("../utils/apiFeatures");
 
 exports.getAllproject = catchAsyncError(async (req, res, next) => {
     const projects = await project.find();
@@ -21,6 +23,30 @@ exports.createproject = catchAsyncError(async (req, res, next) => {
     res.status(201).json({
         success: true,
         project
+    })
+})
+
+exports.getRecentActivityOfProject = catchAsyncError(async (req, res, next) => {
+    const resultPerPage = 10
+    const Project = new ApiFeatures(ActivityLog.find({ projectId: req.params.id }), res.query)
+        .pagination(resultPerPage);
+    const recentactivity = await Project.query;
+    res.status(200).json({
+        success: true,
+        recentactivity
+    })
+})
+
+exports.getTeamActivity = catchAsyncError(async (req, res, next) => {
+    const Project = await project.findById(req.params.id)
+    const getAssignedMembers=Project.TeamMembers;
+    const AssignedMembers = new ApiFeatures(ActivityLog.find({ projectId: req.params.id ,
+         userId: { $in: getAssignedMembers }, }), query)
+       .search().filter().pagination(10)
+    const teamactivity = await AssignedMembers.query()
+    res.status(200).json({
+        success: true,
+        teamactivity,
     })
 })
 
