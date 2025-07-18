@@ -34,7 +34,7 @@ function App() {
         <Route
           element={
             <PublicRoutes>
-              {/* <OuterLayout /> */}
+              <OuterLayout />
             </PublicRoutes>
           }
         >

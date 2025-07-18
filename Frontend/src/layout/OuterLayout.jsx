@@ -39,7 +39,7 @@ const OuterLayout = () => {
       </header>
 
       <main style={mainStyle}>
-        {/* <Outlet /> */}
+        <Outlet />
       </main>
 
       <footer style={footerStyle}>
