@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import InnerLayout from "./layout/InnerLayout";
+import OuterLayout from "./layout/OuterLayout";
 
+
+import Login from "./pages/Login/Login";
+import ForgetPassword from "./pages/Login/ForgetPassword";
+
+import Dashboard from "./pages/Dashboard/Dashboard"
+
+import CreateTicket from "./pages/Ticket/CreateTicket";
+import ViewTicket from "./pages/Ticket/ViewTicket";
+
+
+import KanbanBoard from "./pages/KanbanBoard/KanbanBoard";
+
+
+import ViewUser from "./pages/User/ViewUser";
+import PublicRoutes from './routes/PublicRoute';
+import ProtectedRoutes from './routes/ProtectedRoute';
+
+function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* Redirect root to login */}
+        <Route path="/" element={<Navigate to="/login" />} />
+
+        {/* Public Routes */}
+        <Route
+          element={
+            <PublicRoutes>
+              {/* <OuterLayout /> */}
+            </PublicRoutes>
+          }
+        >
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot" element={<ForgetPassword />} />
+        </Route>
+
+        {/* Protected Routes with layout (for both /dashboard/* and /profile) */}
+        <Route
+          element={
+            <ProtectedRoutes>
+              <InnerLayout />
+            </ProtectedRoutes>
+          }
+        >
+          {/* Dashboard nested under /dashboard */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/add-ticket" element={<CreateTicket />} />
+          <Route path="/dashboard/all-ticket" element={<ViewTicket />} />
+          <Route path="/dashboard/view-users" element={<ViewUser />} />
+          <Route path="/dashboard/kanban-board" element={<KanbanBoard />} />
+
+        </Route>
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
