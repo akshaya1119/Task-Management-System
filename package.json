@@ -1,0 +1,32 @@
+{
+  "name": "task-management-system",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js",
+    "dev": "concurrently \"nodemon backend/server.js\" \"npm run frontend\"",
+    "frontend": "cd frontend && npm start",
+    "i": "npm install && cd frontend && npm install && cd ../backend && npm install"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.3",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.1",
+    "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
