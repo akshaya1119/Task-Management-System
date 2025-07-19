@@ -1,3 +1,4 @@
+// Public test endpoint
 const express = require("express");
 const {
   registerUser,

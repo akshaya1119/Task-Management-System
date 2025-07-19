@@ -16,13 +16,13 @@ exports.getAllproject = catchAsyncError(async (req, res, next) => {
 exports.createproject = catchAsyncError(async (req, res, next) => {
     const { ProjectName, status, ProjectLeader, TeamMembers } = req.body;
 
-    const project = await project.create({
+    const projects = await project.create({
         ProjectName, status, ProjectLeader, TeamMembers
     });
 
     res.status(201).json({
         success: true,
-        project
+        projects
     })
 })
 

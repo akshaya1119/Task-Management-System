@@ -18,6 +18,19 @@ exports.MarkasRead = catchAsyncError(async (req, res, next) => {
     })
 })
 
+exports.createNotification = catchAsyncError(async (req, res, next) => {
+    const { UserId, type, message, CreatedBy, TicketId, CommentId } = req.body;
+
+    const notification = await Notification.create({
+        UserId, type, message, CreatedBy, TicketId, CommentId
+    })
+
+    res.status(201).json({
+        success: true,
+        notification,
+    })
+})
+
 exports.MarkAllAsRead = catchAsyncError(async (req, res, next) => {
     const userId = req.params.id
     const Allunreadnotification = await Notification.updateMany({ UserId: userId, isRead: false },

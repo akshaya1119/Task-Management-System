@@ -12,10 +12,10 @@ exports.getAlltickettype = catchAsyncError(async (req, res, next) => {
 })
 
 exports.createtickettype = catchAsyncError(async (req, res, next) => {
-    const { tickettypeName } = req.body;
+    const { TicketType } = req.body;
 
     const tickettype = await tickettypes.create({
-        tickettypeName
+        TicketType
     });
 
     res.status(201).json({

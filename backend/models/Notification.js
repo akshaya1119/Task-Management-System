@@ -28,7 +28,6 @@ const NotificationSchema = new mongoose.Schema({
     CommentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
-        required: true
     },
     isRead: {
         type: Boolean,
@@ -39,3 +38,5 @@ const NotificationSchema = new mongoose.Schema({
         default: Date.now(),
     }
 })
+
+module.exports = mongoose.model("Notification", NotificationSchema);

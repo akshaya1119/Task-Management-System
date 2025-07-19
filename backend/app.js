@@ -1,3 +1,4 @@
+
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
@@ -26,10 +27,6 @@ const designation = require("./routes/designationRoute")
 const notification = require("./routes/notificationRoute")
 const tickettype = require("./routes/tickettypeRoute")
 
-app.get('/', (req, res) => {
-  console.log('Root route / was hit');
-  res.send('Express root route is working!');
-});
 
 app.use(cors({
   origin: '*',
