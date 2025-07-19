@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 connectDatabase();
 
 
-const server = app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   console.log(`Server is working on http://localhost:${process.env.PORT}`);
 });
 
