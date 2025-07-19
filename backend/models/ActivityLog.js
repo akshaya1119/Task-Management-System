@@ -1,4 +1,4 @@
-const mongoose = required("mongoose")
+const mongoose = require("mongoose")
 
 const ActivitySchema = new mongoose.Schema({
     UserId: {
@@ -32,3 +32,5 @@ const ActivitySchema = new mongoose.Schema({
         type: Date,
     }
 })
+
+module.exports = mongoose.model("ActivityLog", ActivitySchema);
