@@ -32,3 +32,5 @@ const ActivitySchema = new mongoose.Schema({
         type: Date,
     }
 })
+
+module.exports = mongoose.model("ActivityLog", ActivitySchema);
