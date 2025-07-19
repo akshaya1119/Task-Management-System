@@ -26,6 +26,11 @@ const designation = require("./routes/designationRoute")
 const notification = require("./routes/notificationRoute")
 const tickettype = require("./routes/tickettypeRoute")
 
+app.get('/', (req, res) => {
+  console.log('Root route / was hit');
+  res.send('Express root route is working!');
+});
+
 app.use(cors({
   origin: '*',
   methods:['GET','POST', 'PUT', 'PATCH', 'DELETE'],
@@ -41,11 +46,6 @@ app.use("/api/department", department);
 app.use("/api/designation", designation);
 app.use("/api/notification", notification);
 app.use("/api/tickettype", tickettype);
-
-
-app.get('/', (req, res) => {
-  res.send('Hello from Express!');
-});
 
 
 //app.use(express.static(path.join(__dirname, "../frontend/build")));

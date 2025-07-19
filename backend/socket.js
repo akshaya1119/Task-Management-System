@@ -1,10 +1,11 @@
-// server.js
-const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
+const app = require('./app');
 
-const app = express();
+// Create HTTP server using the Express app
 const server = http.createServer(app);
+
+// Attach socket.io to the same server
 const io = socketio(server, {
   cors: {
     origin: "*",
@@ -12,6 +13,7 @@ const io = socketio(server, {
   }
 });
 
+// Socket.io connection handler
 io.on('connection', (socket) => {
   console.log('🔌 New client connected:', socket.id);
 
@@ -24,4 +26,5 @@ io.on('connection', (socket) => {
   });
 });
 
+// Export the server and io instance
 module.exports = { server, io };
