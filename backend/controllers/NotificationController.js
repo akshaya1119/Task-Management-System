@@ -42,6 +42,16 @@ exports.MarkAllAsRead = catchAsyncError(async (req, res, next) => {
     })
 })
 
+exports.getNotification = catchAsyncError(async(req,res,next)=>{
+    const userId = req.params.id;
+    const allNotifications = await Notification.find({UserId:userId})
+
+    res.status(200).json({
+        success: true,
+        allNotifications
+    })
+})
+
 exports.getUnreadCount = catchAsyncError(async(req,res,next)=>{
     const getUnread = await Notification.countDocuments({UserId: req.params.id , isRead:false})
     res.status(200).json({

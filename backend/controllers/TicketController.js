@@ -8,7 +8,12 @@ const ApiFeatures = require("../utils/apiFeatures");
 const comment = require("../models/comment");
 
 exports.getAllTickets = catchAsyncError(async (req, res, next) => {
-  const tickets = await Ticket.find();
+  const tickets = await Ticket.find()
+    .populate({ path: "department", select: "DepartmentName" })
+    .populate({ path: "tickettype", select: "TicketType" })
+    .populate({ path: "project", select: "ProjectName" })
+    .populate({ path: "assignee", select: "fullname" })
+    .populate({ path: "creator", select: "fullname" });
 
   res.status(200).json({
     success: true,
@@ -16,14 +21,14 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   })
 })
 
-exports.AdvancedSearch = catchAsyncError(async(req,res,next)=>{
+exports.AdvancedSearch = catchAsyncError(async (req, res, next) => {
   const ticketApi = new ApiFeatures(Ticket.find(), res.query)
-  .search()
-  .filter();
+    .search()
+    .filter();
   const tickets = await ticketApi.query
   const comments = new ApiFeatures(comment.find(), res.query)
-  .search()
-  .filter();
+    .search()
+    .filter();
   res.status(200).json({
     success: true,
     tickets,
@@ -32,7 +37,13 @@ exports.AdvancedSearch = catchAsyncError(async(req,res,next)=>{
 })
 
 exports.getSingleTicket = catchAsyncError(async (req, res, next) => {
-  const ticket = await Ticket.findById(req.params.id);
+  const ticket = await Ticket.findById(req.params.id)
+    .populate({ path: "department", select: "DepartmentName" })
+    .populate({ path: "tickettype", select: "TicketType" })
+    .populate({ path: "project", select: "ProjectName" })
+    .populate({ path: "assignee", select: "fullname" })
+    .populate({ path: "creator", select: "fullname" });
+
   if (!ticket) {
     return next(
       new ErrorHandler(`Ticket does not exist : ${req.params.id}`)
@@ -48,6 +59,12 @@ exports.getSingleTicket = catchAsyncError(async (req, res, next) => {
 exports.getMyTicket = catchAsyncError(async (req, res, next) => {
   const userId = req.params.id
   const MyTickets = await Ticket.find({ assignee: userId })
+    .populate({ path: "department", select: "DepartmentName" })
+    .populate({ path: "tickettype", select: "TicketType" })
+    .populate({ path: "project", select: "ProjectName" })
+    .populate({ path: "assignee", select: "fullname" })
+    .populate({ path: "creator", select: "fullname" });
+    
   res.status(200).json({
     success: true,
     MyTickets
@@ -60,7 +77,7 @@ exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) =
   const MediumPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: medium })
   const HighPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: high })
   const OpenTickets = await Ticket.countDocuments({ assignee: userid, status: Open })
-  const InProgressTickets = await Ticket.countDocuments({assignee: userid, status: InProgress})
+  const InProgressTickets = await Ticket.countDocuments({ assignee: userid, status: InProgress })
   const CompletedTickets = await Ticket.countDocuments({ assignee: userid, status: Completed })
   const PendingTickets = await Ticket.countDocuments({ assignee: userid, status: Pending })
 
@@ -81,8 +98,18 @@ exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) =
 
 exports.createTicket = catchAsyncError(async (req, res, next) => {
   const { priority, status, tickettype, description, title
-    , project, department, attachment, assignee,
+    , project, attachment, assignee,
     creator, createdAt, dueDate } = req.body
+
+  const assignedUser = await User.findById(assignee)
+  const department = assignedUser?.department;
+
+  if (!department) {
+    return res.status(400).json({
+      success: false,
+      message: "Assignee's department not found."
+    });
+  }
   const Tickets = await Ticket.create({
     priority, status, tickettype, description,
     title, project, department, attachment,
@@ -109,8 +136,8 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
       CreatedBy: creator,
     })
     const io = req.app.get("io")
-    if(io){
-      io.to(assignee).emit("notification",{
+    if (io) {
+      io.to(assignee).emit("notification", {
         type: "assignment",
         message: `You have been assigned to ticket: ${title}`,
         ticketId: Tickets._id,
