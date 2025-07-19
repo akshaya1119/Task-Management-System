@@ -60,7 +60,7 @@ exports.createcomment = catchAsyncError(async (req, res, next) => {
       message: `${CurrentUserName} commented on ticket ${ticket.title}`,
       TicketId: ticket._id,
       relatedComment: comments._id,
-      createdBy: currentUserId,
+      CreatedBy: currentUserId,
     });
 
     io.to(userId).emit('notification', {

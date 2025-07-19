@@ -106,7 +106,7 @@ exports.createTicket = catchAsyncError(async (req, res, next) => {
       type: "assignment",
       message: `You have been assigned to ticket: ${title}`,
       TicketId: Tickets._id,
-      createdBy: creator,
+      CreatedBy: creator,
     })
     const io = req.app.get("io")
     if(io){
