@@ -3,6 +3,7 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const cors = require("cors")
 const path = require("path");
 
 const errorMiddleware = require("./middleware/error");
@@ -22,20 +23,32 @@ const comment = require("./routes/commentRoute")
 const role = require("./routes/roleRoute")
 const department = require("./routes/departmentRoute")
 const designation = require("./routes/designationRoute")
+const notification = require("./routes/notificationRoute")
 const tickettype = require("./routes/tickettypeRoute")
 
-app.use("/api/v1", user);
-app.use("/api/v1", ticket);
-app.use("/api/v1", project);
-app.use("/api/v1", comment);
-app.use("/api/v1", role);
-app.use("/api/v1", department);
-app.use("/api/v1", designation);
-app.use("/api/v1", department);
-app.use("/api/v1", tickettype);
+app.use(cors({
+  origin: '*',
+  methods:['GET','POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type','Authorization']
+}))
+
+app.use("/api/users", user);
+app.use("/api/ticket", ticket);
+app.use("/api/project", project);
+app.use("/api/comment", comment);
+app.use("/api/role", role);
+app.use("/api/department", department);
+app.use("/api/designation", designation);
+app.use("/api/notification", notification);
+app.use("/api/tickettype", tickettype);
 
 
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+app.get('/', (req, res) => {
+  res.send('Hello from Express!');
+});
+
+
+//app.use(express.static(path.join(__dirname, "../frontend/build")));
 
 // app.get("*", (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));

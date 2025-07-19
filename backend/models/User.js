@@ -24,30 +24,27 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     department: {
-        type: String,
-        required: [true, "Please Enter department"],
+        type: mongoose.Schema.ObjectId,
+        ref: "Department",
     },
     role: {
         type: mongoose.Schema.ObjectId,
         ref: "Role",
-        required: true,
     },
     mobileNo: {
         type: String,
-        required: [true, "Please Enter MobileNo"],
         minLength: [10, "MobileNo should have at least 10 characters"],
         maxLength: [10, "MobileNo should be not more than 10 characters"],
     },
     address: {
         type: String,
-        required: [true, "Please Enter Address"],
     },
     profilepicture: {
         type: String,
     },
     status: {
         type: Boolean,
-        required: true,
+        default: true,
     },
     resetPasswodToken: String,
     resetPasswordExpire: Date,

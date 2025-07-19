@@ -1,4 +1,5 @@
 const app = require("./app");
+const dotenv = require("dotenv");
 const connectDatabase = require("./config/database");
 const { server, io } = require('./socket'); // assuming you have a socket.js
 app.set("io", io);
@@ -10,9 +11,8 @@ process.on("uncaughtException", (err) => {
 });
 
 // Config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({ path: "backend/config/config.env" });
-}
+dotenv.config({ path: "config/config.env" });
+
 
 // Connecting to database
 connectDatabase();
