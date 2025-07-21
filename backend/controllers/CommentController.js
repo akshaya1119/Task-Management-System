@@ -1,26 +1,24 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
-const comment = require("../models/comment");
+const commentmodel = require("../models/comment");
 const notification = require("../models/Notification");
 const Ticket = require("../models/Ticket");
-const ticket = require("../models/Ticket");
 const User = require("../models/User");
 const ErrorHandler = require("../utils/errorhandler");
 
 
 exports.createcomment = catchAsyncError(async (req, res, next) => {
-  const { ticketId, userId, comment, createdAt } = req.body
+  const { ticketId, userId, comment } = req.body
   const io = req.app.get("io");
-  const comments = await comment.create({
-    ticketId, userId, comment, createdAt
+  const comments = await commentmodel.create({
+    ticketId, userId, comment
   })
 
-  const ticket = await Ticket.findById(ticketId).populate("assignee , creator, title")
+  const ticket = await Ticket.findById(ticketId).populate("assignee", "creator")
   if (!ticket) return next(new ErrorHandler("Ticket not found", 404));
 
   const currentUserId = userId
   const CurrentUser = await User.findById(currentUserId);
   const CurrentUserName = CurrentUser?.fullname || "Someone";
-
   const mentionRegex = /@(\w+)/g;
   const mentionedUsernames = [...comment.matchAll(mentionRegex)].map(m => m[1]);
   const mentionedUsers = await User.find({ fullname: { $in: mentionedUsernames } });
@@ -41,21 +39,23 @@ exports.createcomment = catchAsyncError(async (req, res, next) => {
 
   // 3. Ticket creator
   if (ticket.creator && ticket.creator._id.toString() !== currentUserId) {
+    console.log("Entered into this")
     allUsersToNotify.add(ticket.creator._id.toString());
   }
 
   // 4. Previous commenters
-  const previousComments = await Comment.find({ ticketId });
+  const previousComments = await commentmodel.find({ ticketId });
   previousComments.forEach(comment => {
     if (comment.userId.toString() !== currentUserId) {
       allUsersToNotify.add(comment.userId.toString());
     }
   });
 
+  console.log(allUsersToNotify)
   // 5. Send notifications
   for (const userId of allUsersToNotify) {
-    await Notification.create({
-      userId: userId,
+    await notification.create({
+      UserId: userId,
       type: "comment",
       message: `${CurrentUserName} commented on ticket ${ticket.title}`,
       TicketId: ticket._id,
@@ -95,8 +95,8 @@ exports.Updatecomment = catchAsyncError(async (req, res, next) => {
 
 exports.getCommentsOfATicket = catchAsyncError(async (req, res, next) => {
   const ticketId = req.params.id
-  const comment = await comment.find({ ticketId: ticketId })
-  .populate({path: "userId", select: "fullName"})
+  const comment = await commentmodel.find({ ticketId: ticketId })
+    .populate({ path: "userId", select: "fullName" })
 
   res.status(200).json({
     success: true,
@@ -106,7 +106,7 @@ exports.getCommentsOfATicket = catchAsyncError(async (req, res, next) => {
 })
 
 exports.deletecomment = catchAsyncError(async (req, res, next) => {
-  const comment = await comment.findById(req.params.id);
+  const comment = await commentmodel.findById(req.params.id);
 
   if (!comment) {
     return next(

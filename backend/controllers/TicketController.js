@@ -22,13 +22,14 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
 })
 
 exports.AdvancedSearch = catchAsyncError(async (req, res, next) => {
-  const ticketApi = new ApiFeatures(Ticket.find(), res.query)
+  const ticketApi = new ApiFeatures(Ticket.find(), req.query)
     .search()
     .filter();
-  const tickets = await ticketApi.query
-  const comments = new ApiFeatures(comment.find(), res.query)
+  const tickets = await ticketApi.query.lean()
+  const commentApi = new ApiFeatures(comment.find(), req.query)
     .search()
     .filter();
+    const comments = await commentApi.query.lean()
   res.status(200).json({
     success: true,
     tickets,
@@ -73,13 +74,13 @@ exports.getMyTicket = catchAsyncError(async (req, res, next) => {
 
 exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) => {
   const userid = req.params.id;
-  const LowPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: low })
-  const MediumPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: medium })
-  const HighPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: high })
-  const OpenTickets = await Ticket.countDocuments({ assignee: userid, status: Open })
-  const InProgressTickets = await Ticket.countDocuments({ assignee: userid, status: InProgress })
-  const CompletedTickets = await Ticket.countDocuments({ assignee: userid, status: Completed })
-  const PendingTickets = await Ticket.countDocuments({ assignee: userid, status: Pending })
+  const LowPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: "low" })
+  const MediumPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: "medium" })
+  const HighPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: "high" })
+  const OpenTickets = await Ticket.countDocuments({ assignee: userid, status: "Open" })
+  const InProgressTickets = await Ticket.countDocuments({ assignee: userid, status: "InProgress" })
+  const CompletedTickets = await Ticket.countDocuments({ assignee: userid, status: "Completed" })
+  const PendingTickets = await Ticket.countDocuments({ assignee: userid, status: "Pending" })
 
   res.status(200).json({
     success: true,

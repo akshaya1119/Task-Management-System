@@ -6,12 +6,11 @@ const router = express.Router();
 
 router.route("/create").post(createTicket,isAuthenticatedUser)
 router.route("/getAll").get(getAllTickets,isAuthenticatedUser)
-router.route("/getMy").get(getMyTicket,isAuthenticatedUser)
-router.route("/getSingle").get(getSingleTicket,isAuthenticatedUser)
-router.route("/getCounts").get(getCountStatusAndPrioritywise,isAuthenticatedUser)
-router.route("/updateticket").put(UpdateTicket,isAuthenticatedUser)
-router.route("/delete").delete(deleteTicket,isAuthenticatedUser)
-router.route("/AdvancedSearch").get(AdvancedSearch,isAuthenticatedUser)
-router.route("/delete").delete(deleteTicket,isAuthenticatedUser)
+router.route("/getMy/:id").get(getMyTicket,isAuthenticatedUser)
+router.route("/getSingle/:id").get(isAuthenticatedUser,getSingleTicket)
+router.route("/getCounts/:id").get(isAuthenticatedUser,getCountStatusAndPrioritywise)
+router.route("/updateticket/:id").put(isAuthenticatedUser,UpdateTicket)
+router.route("/delete/:id").delete(isAuthenticatedUser,deleteTicket)
+router.route("/AdvancedSearch").get(isAuthenticatedUser,AdvancedSearch)
 
 module.exports = router;
