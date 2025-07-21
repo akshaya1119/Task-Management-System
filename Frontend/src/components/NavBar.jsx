@@ -26,6 +26,9 @@ const Navbar = () => {
                         <Link to="/dashboard/all-ticket" className="hover:text-gray-300 transition">
                             Tickets
                         </Link>
+                        <Link to="/dashboard/add-ticket" className="hover:text-gray-300 transition">
+                            Create
+                        </Link>
                         <Link to="/dashboard/kanban-board" className="hover:text-gray-300 transition">
                             Kanban Board
                         </Link>
