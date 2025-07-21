@@ -5,7 +5,9 @@ const ErrorHandler = require("../utils/errorhandler");
 const ApiFeatures = require("../utils/apiFeatures");
 
 exports.getAllproject = catchAsyncError(async (req, res, next) => {
-    const projects = await project.find();
+    const projects = await project.find()
+        .populate({ path: "ProjectLeader", select: "fullName" })
+        .populate({ path: "TeamMembers", select: "fullName" });
 
     res.status(200).json({
         success: true,
@@ -39,10 +41,12 @@ exports.getRecentActivityOfProject = catchAsyncError(async (req, res, next) => {
 
 exports.getTeamActivity = catchAsyncError(async (req, res, next) => {
     const Project = await project.findById(req.params.id)
-    const getAssignedMembers=Project.TeamMembers;
-    const AssignedMembers = new ApiFeatures(ActivityLog.find({ projectId: req.params.id ,
-         userId: { $in: getAssignedMembers }, }), query)
-       .search().filter().pagination(10)
+    const getAssignedMembers = Project.TeamMembers;
+    const AssignedMembers = new ApiFeatures(ActivityLog.find({
+        projectId: req.params.id,
+        userId: { $in: getAssignedMembers },
+    }), query)
+        .search().filter().pagination(10)
     const teamactivity = await AssignedMembers.query()
     res.status(200).json({
         success: true,
@@ -52,6 +56,8 @@ exports.getTeamActivity = catchAsyncError(async (req, res, next) => {
 
 exports.getSingleProject = catchAsyncError(async (req, res, next) => {
     const Project = await project.findById(req.params.id)
+        .populate({ path: "ProjectLeader", select: "fullName" })
+        .populate({ path: "TeamMembers", select: "fullName" });
     if (!Project) {
         return next(
             new ErrorHandler(`Project does not exist with Id: ${req.params.id}`)

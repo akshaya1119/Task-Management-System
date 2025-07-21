@@ -96,6 +96,7 @@ exports.Updatecomment = catchAsyncError(async (req, res, next) => {
 exports.getCommentsOfATicket = catchAsyncError(async (req, res, next) => {
   const ticketId = req.params.id
   const comment = await comment.find({ ticketId: ticketId })
+  .populate({path: "userId", select: "fullName"})
 
   res.status(200).json({
     success: true,
