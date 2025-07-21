@@ -29,9 +29,10 @@ const tickettype = require("./routes/tickettypeRoute")
 
 
 app.use(cors({
-  origin: '*',
+  origin: 'http://localhost:5173',
   methods:['GET','POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type','Authorization']
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true,
 }))
 
 app.use("/api/users", user);
