@@ -1,38 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import TicketService from '../../services/TicketService'; // Adjust if needed
 
 const KanbanBoard = () => {
   const ITEMS_PER_PAGE = 10;
-
-  const data = {
-    active: [
-      { title: 'Reducing Scrap in Machine Shop', due: 'Nov 09, 2020' },
-      { title: 'Simple Patient Tracking Tool', due: 'Nov 12, 2020' },
-      // Add more dummy data if needed
-    ],
-    overdue: [
-      { title: 'KaiNexus 2.2.9', due: 'Oct 01, 2020' },
-      { title: 'Overdue Project in List View', due: 'Nov 05, 2020' },
-    ],
-    planned: [
-      { title: 'Test Project', due: 'Nov 16, 2020' },
-      { title: 'Review Monthly Metrics', due: 'Nov 20, 2020' },
-      { title: 'Review Monthly Metrics', due: 'Nov 20, 2020' },
-      { title: 'Review Monthly Metrics', due: 'Nov 20, 2020' },
-    ],
-    completed: [
-      { title: 'KaiNexus 2.2.8', completed: 'Nov 09, 2020' },
-      { title: 'Develop Staff Communication Plan', completed: 'Nov 08, 2020' },
-      { title: 'Another Completed Task', completed: 'Nov 07, 2020' },
-      { title: 'Task 4', completed: 'Nov 06, 2020' },
-      { title: 'Task 5', completed: 'Nov 05, 2020' },
-      { title: 'Task 6', completed: 'Nov 04, 2020' },
-      { title: 'Task 7', completed: 'Nov 03, 2020' },
-      { title: 'Task 8', completed: 'Nov 02, 2020' },
-      { title: 'Task 9', completed: 'Nov 01, 2020' },
-      { title: 'Task 10', completed: 'Oct 31, 2020' },
-      { title: 'Task 11', completed: 'Oct 30, 2020' },
-    ],
-  };
+  const userId = "687b6217fece4c25bb1f6f01"; // Static for now
 
   const [pages, setPages] = useState({
     active: 1,
@@ -40,6 +11,33 @@ const KanbanBoard = () => {
     planned: 1,
     completed: 1,
   });
+
+  const [tickets, setTickets] = useState({
+    active: [],
+    overdue: [],
+    planned: [],
+    completed: [],
+  });
+
+  useEffect(() => {
+    const getTickets = async () => {
+      try {
+        const response = await TicketService.getTickets(userId);
+        const data = response.count;
+        console.log(data)
+        setTickets({
+          active: data.OpenTickets || [],
+          overdue: data.PendingTickets || [],
+          planned: data.InProgressTickets || [],
+          completed: data.CompletedTickets || [],
+        });
+      } catch (error) {
+        console.error("Error fetching tickets:", error);
+      }
+    };
+
+    getTickets();
+  }, [userId]);
 
   const paginate = (items, page) => {
     const start = (page - 1) * ITEMS_PER_PAGE;
@@ -50,11 +48,8 @@ const KanbanBoard = () => {
 
   const handlePageChange = (type, direction) => {
     setPages((prev) => {
-      const maxPage = totalPages(data[type]);
-      const newPage = Math.min(
-        Math.max(prev[type] + direction, 1),
-        maxPage
-      );
+      const maxPage = totalPages(tickets[type]);
+      const newPage = Math.min(Math.max(prev[type] + direction, 1), maxPage);
       return { ...prev, [type]: newPage };
     });
   };
@@ -62,13 +57,28 @@ const KanbanBoard = () => {
   const renderColumn = (type, title, bgColor, dateLabel) => (
     <div className={`${bgColor} p-4 rounded-lg shadow`}>
       <h2 className="text-xl font-semibold mb-3">
-        {title} ({data[type].length})
+        {title} ({tickets[type].length})
       </h2>
-      {paginate(data[type], pages[type]).map((item, index) => (
-        <div key={index} className="bg-white p-3 mb-3 rounded shadow-sm">
-          <p className="font-medium">{item.title}</p>
+
+      {paginate(tickets[type], pages[type]).map((item) => (
+        <div key={item._id} className="bg-white p-3 mb-3 rounded shadow-sm">
+          <p className="font-medium">{item.title}
+            <span
+              className="text-xs text-white px-2 py-1 rounded ml-2"
+              style={{
+                backgroundColor:
+                  item.priority === "high"
+                    ? "#ef4444" // red
+                    : item.priority === "medium"
+                      ? "#f59e0b" // orange
+                      : "#10b981", // green (low)
+              }}
+            >
+              {item.priority}
+            </span>
+          </p>
           <p className="text-sm text-gray-600">
-            {dateLabel}: {item.due || item.completed}
+            {dateLabel}: {item.dueDate?.split("T")[0] || 'N/A'}
           </p>
         </div>
       ))}
@@ -83,11 +93,11 @@ const KanbanBoard = () => {
           Prev
         </button>
         <span className="text-sm self-center">
-          Page {pages[type]} of {totalPages(data[type])}
+          Page {pages[type]} of {totalPages(tickets[type])}
         </span>
         <button
           onClick={() => handlePageChange(type, 1)}
-          disabled={pages[type] === totalPages(data[type])}
+          disabled={pages[type] === totalPages(tickets[type])}
           className="px-3 py-1 bg-white rounded shadow disabled:opacity-50"
         >
           Next

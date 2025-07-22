@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon, BellIcon, HomeIcon, ClipboardDocumentListIcon, PlusCircleIcon, ViewColumnsIcon, UsersIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import NotificationBox from '../pages/Notification/NotificationBox';
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
-
+    const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
     const toggleMenu = () => setMenuOpen(!menuOpen);
     const toggleNotifications = () => setShowNotifications(!showNotifications);
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/dashboard/search?q=${encodeURIComponent(searchQuery)}`);
+        }
+    };
 
     return (
         <nav className="bg-blue-900 text-white relative">
@@ -20,17 +27,31 @@ const Navbar = () => {
                             🎟️ TicketSystem
                         </Link>
                     </div>
+                    <div>
+                        <form onSubmit={handleSearch} className="hidden md:flex items-center bg-white rounded-md px-2 py-1 w-72">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search tickets, users, etc..."
+                                className="w-full text-black bg-transparent focus:outline-none"
+                            />
+                            <button type="submit" className="text-blue-900 font-bold">
+                                🔍
+                            </button>
+                        </form>
+                    </div>
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-6">
                         <Link to="/dashboard" className="flex items-center gap-1 hover:text-gray-300 transition">
-                            <HomeIcon className="h-5 w-5" /> 
+                            <HomeIcon className="h-5 w-5" />
                         </Link>
                         <Link to="/dashboard/all-ticket" className="flex items-center gap-1 hover:text-gray-300 transition">
-                            <ClipboardDocumentListIcon className="h-5 w-5" /> 
+                            <ClipboardDocumentListIcon className="h-5 w-5" />
                         </Link>
                         <Link to="/dashboard/add-ticket" className="flex items-center gap-1 hover:text-gray-300 transition">
-                            <PlusCircleIcon className="h-5 w-5" /> 
+                            <PlusCircleIcon className="h-5 w-5" />
                         </Link>
                         <Link to="/dashboard/kanban-board" className="flex items-center gap-1 hover:text-gray-300 transition">
                             <ViewColumnsIcon className="h-5 w-5" />
@@ -39,7 +60,7 @@ const Navbar = () => {
                             <UsersIcon className="h-5 w-5" />
                         </Link>
                         <Link to="/profile" className="flex items-center gap-1 hover:text-gray-300 transition">
-                            <UserCircleIcon className="h-5 w-5" /> 
+                            <UserCircleIcon className="h-5 w-5" />
                         </Link>
 
                         {/* Notification Icon */}
@@ -48,7 +69,7 @@ const Navbar = () => {
                                 <BellIcon className="h-6 w-6" />
                             </button>
                             {showNotifications && (
-                                <NotificationBox onClose={() => setShowNotifications(false)} />
+                                <NotificationBox onClose={() => setShowNotifications(false)} userId={"687b6217fece4c25bb1f6f01"} />
                             )}
                         </div>
                     </div>

@@ -17,12 +17,6 @@ const userSchema = new mongoose.Schema({
         unique: true,
         validate: [validator.isEmail, "Please Enter a valid Email"]
     },
-    password: {
-        type: String,
-        required: [true, "Please Enter your password"],
-        minLength: [8, "Password should be greater than 8 characters"],
-        select: false,
-    },
     department: {
         type: mongoose.Schema.ObjectId,
         ref: "Department",
@@ -46,8 +40,6 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    resetPasswodToken: String,
-    resetPasswordExpire: Date,
 })
 
 // This is done in order to encrypt the password and save in db
@@ -67,17 +59,9 @@ userSchema.methods.getJWTToken = function () {
 }
 // Generating pasword when forget
 
-userSchema.methods.getResetPasswordToken = function () {
-    const resetToken = crypto.randomBytes(20).toString("hex");
-    //basically neeche ki line ye kh rhi ki tmhe kya update kena h which is token and hex is used for making it readable
-    this.resetPasswodToken = crypto.createHash("sha256").update(token).digest("hex");
-    this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-    return resetToken;
-}
+
 
 // Compare Password
 
-userSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password)
-}
+
 module.exports = mongoose.model("User", userSchema);
