@@ -74,13 +74,13 @@ exports.getMyTicket = catchAsyncError(async (req, res, next) => {
 
 exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) => {
   const userid = req.params.id;
-  const LowPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: "low" })
-  const MediumPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: "medium" })
-  const HighPriorityTickets = await Ticket.countDocuments({ assignee: userid, priority: "high" })
-  const OpenTickets = await Ticket.countDocuments({ assignee: userid, status: "Open" })
-  const InProgressTickets = await Ticket.countDocuments({ assignee: userid, status: "InProgress" })
-  const CompletedTickets = await Ticket.countDocuments({ assignee: userid, status: "Completed" })
-  const PendingTickets = await Ticket.countDocuments({ assignee: userid, status: "Pending" })
+  const LowPriorityTickets = await Ticket.find({ assignee: userid, priority: "low" })
+  const MediumPriorityTickets = await Ticket.find({ assignee: userid, priority: "medium" })
+  const HighPriorityTickets = await Ticket.find({ assignee: userid, priority: "high" })
+  const OpenTickets = await Ticket.find({ assignee: userid, status: "open" })
+  const InProgressTickets = await Ticket.find({ assignee: userid, status: "InProgress" })
+  const CompletedTickets = await Ticket.find({ assignee: userid, status: "Completed" })
+  const PendingTickets = await Ticket.find({ assignee: userid, status: "Pending" })
 
   res.status(200).json({
     success: true,
