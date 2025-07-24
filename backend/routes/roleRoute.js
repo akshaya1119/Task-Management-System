@@ -4,9 +4,9 @@ const { getAllroles, createroles, updateroles, deleteroles } = require("../contr
 
 const router = express.Router();
 
-router.route("/getAll").get(getAllroles, isAuthenticatedUser)
-router.route("/create").post(createroles, isAuthenticatedUser)
-router.route("/update/:id").put(updateroles, isAuthenticatedUser)
-router.route("/delete/:id").delete(deleteroles, isAuthenticatedUser)
+router.route("/getAll").get(isAuthenticatedUser,getAllroles)
+router.route("/create").post(isAuthenticatedUser,createroles)
+router.route("/update/:id").put(isAuthenticatedUser,updateroles)
+router.route("/delete/:id").delete(isAuthenticatedUser,deleteroles)
 
 module.exports = router;

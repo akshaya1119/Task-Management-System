@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
 // Route Imports
 const user = require("./routes/userRoute");
+const auth = require("./routes/userauthRoute")
 const ticket = require("./routes/ticketRoute")
 const project = require("./routes/projectRoute")
 const comment = require("./routes/commentRoute")
@@ -36,6 +37,7 @@ app.use(cors({
 }))
 
 app.use("/api/users", user);
+app.use("/api/auth", auth);
 app.use("/api/ticket", ticket);
 app.use("/api/project", project);
 app.use("/api/comment", comment);

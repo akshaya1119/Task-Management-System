@@ -22,6 +22,7 @@ import ViewUser from "./pages/User/ViewUser";
 import PublicRoutes from './routes/PublicRoute';
 import ProtectedRoutes from './routes/ProtectedRoute';
 import SearchResults from './pages/Search/AdvancedSearch';
+import Master from './pages/Masters/Master';
 
 function App() {
   return (
@@ -54,7 +55,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/add-ticket" element={<CreateTicket />} />
           <Route path="/dashboard/all-ticket" element={<ViewTicket />} />
-          <Route path="/dashboard/view-users" element={<ViewUser />} />
+          <Route path="/dashboard/masters" element={<Master />} />
           <Route path="/dashboard/kanban-board" element={<KanbanBoard />} />
           <Route path="/dashboard/search" element={<SearchResults />} />
         </Route>

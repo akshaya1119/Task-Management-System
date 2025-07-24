@@ -56,7 +56,7 @@ const Navbar = () => {
                         <Link to="/dashboard/kanban-board" className="flex items-center gap-1 hover:text-gray-300 transition">
                             <ViewColumnsIcon className="h-5 w-5" />
                         </Link>
-                        <Link to="/dashboard/view-users" className="flex items-center gap-1 hover:text-gray-300 transition">
+                        <Link to="/dashboard/masters" className="flex items-center gap-1 hover:text-gray-300 transition">
                             <UsersIcon className="h-5 w-5" />
                         </Link>
                         <Link to="/profile" className="flex items-center gap-1 hover:text-gray-300 transition">
@@ -105,8 +105,8 @@ const Navbar = () => {
                     <Link to="/dashboard/kanban-board" className="flex items-center gap-2 text-white hover:text-gray-300">
                         <ViewColumnsIcon className="h-5 w-5" /> Kanban Board
                     </Link>
-                    <Link to="/dashboard/view-users" className="flex items-center gap-2 text-white hover:text-gray-300">
-                        <UsersIcon className="h-5 w-5" /> Users
+                    <Link to="/dashboard/masters" className="flex items-center gap-2 text-white hover:text-gray-300">
+                        <UsersIcon className="h-5 w-5" /> Master
                     </Link>
                     <Link to="/profile" className="flex items-center gap-2 text-white hover:text-gray-300">
                         <UserCircleIcon className="h-5 w-5" /> Profile

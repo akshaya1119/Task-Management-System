@@ -9,6 +9,7 @@ const TicketTypeService = {
       throw error;
     }
   },
+
 }
 
 export default TicketTypeService;

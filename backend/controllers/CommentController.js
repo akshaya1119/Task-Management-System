@@ -8,9 +8,10 @@ const ErrorHandler = require("../utils/errorhandler");
 
 exports.createcomment = catchAsyncError(async (req, res, next) => {
   const { ticketId, userId, comment } = req.body
+  const attachment = req.file? req.filename : null;
   const io = req.app.get("io");
   const comments = await commentmodel.create({
-    ticketId, userId, comment
+    ticketId, userId, comment, attachment
   })
 
   const ticket = await Ticket.findById(ticketId).populate("assignee", "creator")

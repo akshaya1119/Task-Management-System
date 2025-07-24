@@ -4,8 +4,8 @@ const { isAuthenticatedUser } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.route("/getAll").get(getAllDesignation, isAuthenticatedUser)
-router.route("/create").post(createDesignation, isAuthenticatedUser)
-router.route("/update/:id").put(updateDesignation, isAuthenticatedUser)
-router.route("/delete/:id").delete(deleteDesignation, isAuthenticatedUser)
+router.route("/getAll").get(isAuthenticatedUser,getAllDesignation)
+router.route("/create").post(isAuthenticatedUser,createDesignation)
+router.route("/update/:id").put(isAuthenticatedUser,updateDesignation)
+router.route("/delete/:id").delete(isAuthenticatedUser,deleteDesignation)
 module.exports = router;
