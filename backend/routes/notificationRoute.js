@@ -4,9 +4,9 @@ const { isAuthenticatedUser } = require("../middleware/auth")
 
 const router = express.Router()
 
-router.route("/notifications/mark-all-read/:id").put(MarkAllAsRead,isAuthenticatedUser)
-router.route("/notifications/mark-as-read/:id").put(MarkasRead,isAuthenticatedUser)
-router.route("/notifications/getunreadcount").get(getUnreadCount,isAuthenticatedUser)
-router.route("/create").post(createNotification,isAuthenticatedUser)
-router.route("/getNotification/:id").get(getNotification,isAuthenticatedUser)
+router.route("/notifications/mark-all-read/:id").put(isAuthenticatedUser,MarkAllAsRead)
+router.route("/notifications/mark-as-read/:id").put(isAuthenticatedUser,MarkasRead)
+router.route("/notifications/getunreadcount").get(isAuthenticatedUser,getUnreadCount)
+router.route("/create").post(isAuthenticatedUser,createNotification)
+router.route("/getNotification/:id").get(isAuthenticatedUser,getNotification)
 module.exports = router;

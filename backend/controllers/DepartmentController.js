@@ -11,6 +11,8 @@ exports.getAllDepartment = catchAsyncError(async (req, res, next) => {
     })
 })
 
+
+
 exports.createDepartment = catchAsyncError(async (req, res, next) => {
     const { DepartmentName } = req.body;
 

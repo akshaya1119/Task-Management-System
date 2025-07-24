@@ -21,6 +21,21 @@ exports.getAllTickets = catchAsyncError(async (req, res, next) => {
   })
 })
 
+exports.getOpenAndDueTicket = catchAsyncError(async (req, res, next) => {
+  const tickets = await Ticket.find({ status: "open", dueDate: { $lt: new Date() } })
+  const updatedTickets = await Promise.all(
+    tickets.map(async (ticket) => {
+      ticket.status = "pending";
+      return await ticket.save();
+    })
+  );
+  // Send response
+  res.status(200).json({
+    success: true,
+    data: updatedTickets,
+  });
+})
+
 exports.AdvancedSearch = catchAsyncError(async (req, res, next) => {
   const ticketApi = new ApiFeatures(Ticket.find(), req.query)
     .search()
@@ -29,7 +44,7 @@ exports.AdvancedSearch = catchAsyncError(async (req, res, next) => {
   const commentApi = new ApiFeatures(comment.find(), req.query)
     .search()
     .filter();
-    const comments = await commentApi.query.lean()
+  const comments = await commentApi.query.lean()
   res.status(200).json({
     success: true,
     tickets,
@@ -65,7 +80,7 @@ exports.getMyTicket = catchAsyncError(async (req, res, next) => {
     .populate({ path: "project", select: "ProjectName" })
     .populate({ path: "assignee", select: "fullname" })
     .populate({ path: "creator", select: "fullname" });
-    
+
   res.status(200).json({
     success: true,
     MyTickets
@@ -99,8 +114,10 @@ exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) =
 
 exports.createTicket = catchAsyncError(async (req, res, next) => {
   const { priority, status, tickettype, description, title
-    , project, attachment, assignee,
+    , project, assignee,
     creator, createdAt, dueDate } = req.body
+
+  const attachment = req.file ? req.file.filename : null;
 
   const assignedUser = await User.findById(assignee)
   const department = assignedUser?.department;

@@ -4,9 +4,9 @@ const { getAllDepartment, createDepartment, updateDepartment, deleteDepartment }
 
 const router = express.Router();
 
-router.route("/getAll").get(getAllDepartment, isAuthenticatedUser)
-router.route("/create").post(createDepartment, isAuthenticatedUser)
-router.route("/update/:id").put(updateDepartment, isAuthenticatedUser)
-router.route("/delete/:id").delete(deleteDepartment, isAuthenticatedUser)
+router.route("/getAll").get(isAuthenticatedUser,getAllDepartment)
+router.route("/create").post(isAuthenticatedUser,createDepartment)
+router.route("/update/:id").put(isAuthenticatedUser,updateDepartment)
+router.route("/delete/:id").delete(isAuthenticatedUser,deleteDepartment)
 
 module.exports = router;

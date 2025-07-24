@@ -4,12 +4,12 @@ const { getAllproject, createproject, updateproject, deleteproject, getRecentAct
 
 const router = express.Router();
 
-router.route("/getAll").get(getAllproject, isAuthenticatedUser)
-router.route("/create").post(createproject, isAuthenticatedUser)
-router.route("/update/:id").put(updateproject, isAuthenticatedUser)
-router.route("/delete/:id").delete(deleteproject, isAuthenticatedUser)
-router.route("/getRecentActivity/:projectId").get(getRecentActivityOfProject,isAuthenticatedUser)
-router.route("/getTeamActivity/:projectId").get(getTeamActivity,isAuthenticatedUser)
-router.route("/getSingle/:id").get(getSingleProject,isAuthenticatedUser)
+router.route("/getAll").get(isAuthenticatedUser,getAllproject)
+router.route("/create").post(isAuthenticatedUser,createproject)
+router.route("/update/:id").put(isAuthenticatedUser,updateproject)
+router.route("/delete/:id").delete(isAuthenticatedUser,deleteproject)
+router.route("/getRecentActivity/:projectId").get(isAuthenticatedUser,getRecentActivityOfProject)
+router.route("/getTeamActivity/:projectId").get(isAuthenticatedUser,getTeamActivity)
+router.route("/getSingle/:id").get(isAuthenticatedUser,getSingleProject)
 
 module.exports = router;

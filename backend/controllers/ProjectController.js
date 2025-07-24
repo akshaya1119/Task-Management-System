@@ -6,8 +6,8 @@ const ApiFeatures = require("../utils/apiFeatures");
 
 exports.getAllproject = catchAsyncError(async (req, res, next) => {
     const projects = await project.find()
-        .populate({ path: "ProjectLeader", select: "fullName" })
-        .populate({ path: "TeamMembers", select: "fullName" });
+        .populate({ path: "ProjectLeader", select: "fullname" })
+        .populate({ path: "TeamMembers", select: "fullname" });
 
     res.status(200).json({
         success: true,

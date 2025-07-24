@@ -4,9 +4,9 @@ const { getAlltickettype, createtickettype, updatetickettype, deletetickettype }
 
 const router = express.Router();
 
-router.route("/getAll").get(getAlltickettype, isAuthenticatedUser)
-router.route("/create").post(createtickettype, isAuthenticatedUser)
-router.route("/update/:id").put(updatetickettype, isAuthenticatedUser)
-router.route("/delete/:id").delete(deletetickettype, isAuthenticatedUser)
+router.route("/getAll").get(isAuthenticatedUser,getAlltickettype)
+router.route("/create").post(isAuthenticatedUser,createtickettype)
+router.route("/update/:id").put(isAuthenticatedUser,updatetickettype )
+router.route("/delete/:id").delete(isAuthenticatedUser,deletetickettype)
 
 module.exports = router;

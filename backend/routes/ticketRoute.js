@@ -1,12 +1,13 @@
 const express = require("express");
 const { createTicket, getAllTickets, getMyTicket, getSingleTicket, getCountStatusAndPrioritywise, UpdateTicket, deleteTicket, AdvancedSearch } = require("../controllers/TicketController");
 const { isAuthenticatedUser } = require("../middleware/auth");
+const upload = require("../middleware/multer");
 
 const router = express.Router();
 
-router.route("/create").post(createTicket,isAuthenticatedUser)
-router.route("/getAll").get(getAllTickets,isAuthenticatedUser)
-router.route("/getMy/:id").get(getMyTicket,isAuthenticatedUser)
+router.route("/create").post(isAuthenticatedUser,upload.array("attachments", 10),createTicket)
+router.route("/getAll").get(isAuthenticatedUser,getAllTickets)
+router.route("/getMy/:id").get(isAuthenticatedUser,getMyTicket)
 router.route("/getSingle/:id").get(isAuthenticatedUser,getSingleTicket)
 router.route("/getCounts/:id").get(isAuthenticatedUser,getCountStatusAndPrioritywise)
 router.route("/updateticket/:id").put(isAuthenticatedUser,UpdateTicket)
