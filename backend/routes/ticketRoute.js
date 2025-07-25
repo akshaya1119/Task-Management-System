@@ -1,5 +1,5 @@
 const express = require("express");
-const { createTicket, getAllTickets, getMyTicket, getSingleTicket, getCountStatusAndPrioritywise, UpdateTicket, deleteTicket, AdvancedSearch } = require("../controllers/TicketController");
+const { createTicket, getAllTickets, getMyTicket, getSingleTicket, getCountStatusAndPrioritywise, UpdateTicket, deleteTicket, AdvancedSearch,getOpenAndDueTicket } = require("../controllers/TicketController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
@@ -13,5 +13,6 @@ router.route("/getCounts/:id").get(isAuthenticatedUser,getCountStatusAndPriority
 router.route("/updateticket/:id").put(isAuthenticatedUser,UpdateTicket)
 router.route("/delete/:id").delete(isAuthenticatedUser,deleteTicket)
 router.route("/AdvancedSearch").get(isAuthenticatedUser,AdvancedSearch)
+router.route("/getOpenAndDueTicket").get(isAuthenticatedUser,getOpenAndDueTicket)
 
 module.exports = router;

@@ -5,6 +5,7 @@ const UserAuth = require("../models/UserAuth")
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 
 // Register a User
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
@@ -26,11 +27,13 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
   const plainPassword = crypto.randomBytes(8).toString('hex'); // 16-char random password
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
-  const userAuth = await UserAuth.create({
+console.log(hashedPassword)
+  await UserAuth.create({
     UserId: user._id,
-    password: hashedPassword,
-  })
+    Password: hashedPassword,
+    AutogenPass: true,
+  });
+
   const message = `
     Hello ${user.fullname},
 
@@ -48,18 +51,13 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
       email: user.email,
       subject: `Login Credentials`,
       message,
-    })
-    res.status(200).json({
-      success: true,
-      message: `Email sent to ${user.email} successfully`,
     });
+    
+  sendToken(user, 201, res);
   }
   catch (error) {
     return next(new ErrorHandler("Failed to send email", 500));
   }
-
-
-  sendToken(user, 201, res);
 });
 
 
@@ -103,7 +101,7 @@ exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
 // update User Role -- Admin
 exports.updateUserRole = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
-    name: req.body.name,
+    name: req.body.fullname,
     email: req.body.email,
     role: req.body.role,
   };
@@ -136,7 +134,7 @@ exports.uploadProfilePicture = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Profile picture uploaded successfully',
-    profilePicture: user.profilePicture,
+    profilePicture: user.profilepicture,
   });
 
 })
@@ -150,7 +148,8 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 400)
     );
   }
-
+ 
+  await UserAuth.deleteOne({ UserId: user._id});
   await user.remove();
 
   res.status(200).json({

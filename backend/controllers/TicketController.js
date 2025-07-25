@@ -95,7 +95,7 @@ exports.getCountStatusAndPrioritywise = catchAsyncError(async (req, res, next) =
   const OpenTickets = await Ticket.find({ assignee: userid, status: "open" })
   const InProgressTickets = await Ticket.find({ assignee: userid, status: "InProgress" })
   const CompletedTickets = await Ticket.find({ assignee: userid, status: "Completed" })
-  const PendingTickets = await Ticket.find({ assignee: userid, status: "Pending" })
+  const PendingTickets = await Ticket.find({ assignee: userid, status: "pending" })
 
   res.status(200).json({
     success: true,
