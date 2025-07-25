@@ -1,9 +1,13 @@
 const catchAsyncError = require("../middleware/catchAsyncError");
-const auth = require("../models/UserAuth")
+const Auth = require("../models/UserAuth")
 const User = require("../models/User")
+const sendToken = require("../utils/jwtToken");
+const ErrorHandler = require("../utils/errorhandler");
+const bycrypt = require("bcryptjs")
+
 
 exports.ChangePassword = catchAsyncError(async (req, res, next) => {
-    const userid = await auth.findById(req.params.id).select("+Password");
+    const userid = await Auth.findById(req.params.id).select("+Password");
     const isPasswordMatched = await userid.comparePassword(req.body.oldPassword);
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Old password is incorrect", 400));
@@ -13,8 +17,8 @@ exports.ChangePassword = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("password does not match", 400));
     }
     const hashedNewPassword = await bcrypt.hash(req.body.newPassword, 10);
-    auth.Password = hashedNewPassword;
-    await auth.save();
+    Auth.Password = hashedNewPassword;
+    await Auth.save();
 
 })
 
@@ -25,7 +29,7 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
     if (!user) {
         return next(new ErrorHandler("User not found", 404));
     }
-    const userAuth = await auth.findOne({ UserId: user._id });
+    const userAuth = await Auth.findOne({ UserId: user._id });
 
     if (!userAuth) {
         return next(new ErrorHandler("User authentication details not found", 404));
@@ -70,7 +74,7 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
         .update(req.params.token)
         .digest("hex");
 
-    const userAuth = await auth.findOne({
+    const userAuth = await Auth.findOne({
         PasswordResetToken: resetPasswordToken,
         PasswordResetExpire: { $gt: Date.now() },
     });
@@ -126,19 +130,17 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     if (!email || !password) {
         return next(new ErrorHandler("Please Enter Email & Password", 400));
     }
-
-    const user = await User.findOne({ email }).select("+userId");
-    const userpassword = await auth.findById(user).select("+password")
-
+    const user = await User.findOne({ email });
     if (!user) {
         return next(new ErrorHandler("Invalid email or password", 401));
     }
-
-    const isPasswordMatched = await userpassword.comparePassword(password);
-
+    const userAuth = await Auth.findOne({UserId: user._id}).select("+password")
+    if(!userAuth){
+        return next(new ErrorHandler("Authentication details not found", 401));
+    }
+    const isPasswordMatched = await userAuth.comparePassword(password);
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid email or password", 401));
     }
-
     sendToken(user, 200, res);
 });

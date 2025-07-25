@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 
 const InnerLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-black text-grey">
       {/* Top Navbar */}
       <Navbar />
 
@@ -15,7 +15,7 @@ const InnerLayout = () => {
         {/* Sidebar */}
 
         {/* Main content */}
-        <main className="flex-1 bg-gray-50 p-6 overflow-auto">
+        <main className="flex-1 p-6 overflow-auto">
           <Outlet />
         </main>
       </div>

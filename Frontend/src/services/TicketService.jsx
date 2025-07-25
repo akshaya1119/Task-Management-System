@@ -10,6 +10,14 @@ const TicketService = {
       throw error;
     }
   },
+  getOpenAndDueTicket: async () => {
+    try {
+      const response = await API.get(`/ticket/getOpenAndDueTicket`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 }
 
 export default TicketService;
