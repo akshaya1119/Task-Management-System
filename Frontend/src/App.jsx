@@ -23,6 +23,7 @@ import PublicRoutes from './routes/PublicRoute';
 import ProtectedRoutes from './routes/ProtectedRoute';
 import SearchResults from './pages/Search/AdvancedSearch';
 import Master from './pages/Masters/Master';
+import ChangePassword from './pages/Login/ChangePassword';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         >
           <Route path="/login" element={<Login />} />
           <Route path="/forgot" element={<ForgetPassword />} />
+        <Route path="/changepassword" element={<ChangePassword />} />
         </Route>
 
         {/* Protected Routes with layout (for both /dashboard/* and /profile) */}
