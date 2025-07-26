@@ -15,54 +15,60 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.email || !formData.password) {
-    setError('Please enter both email and password.');
-    return;
-  }
-
-  setError('');
-
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-      method: "POST",
-      credentials: "include", // this allows cookies to be stored
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json();
-console.log(data)
-    if (!response.ok) {
-      setError(data.message || "Login failed");
+    if (!formData.email || !formData.password) {
+      setError('Please enter both email and password.');
       return;
     }
 
-    // Save token if needed (optional — already in cookies)
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+    setError('');
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        method: "POST",
+        credentials: "include", // this allows cookies to be stored
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      console.log(data)
+
+      if (!response.ok) {
+        setError(data.message || "Login failed");
+        return;
+      }
+
+
+      // Save token if needed (optional — already in cookies)
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      // Save user details with password flags
+      const userWithFlags = {
+        ...data.user,
+        isAutoGenPass: data.isAutoGenPass || false,
+        requirePasswordChange: data.requirePasswordChange || false
+      };
+      localStorage.setItem("user", JSON.stringify(userWithFlags));
+
+      // Zustand store update
+      login(userWithFlags);
+      
+      console.log("Login successful, user data:", userWithFlags);
+      
+      // Navigate to dashboard - ProtectedRoute will handle redirection to change password if needed
+      navigate("/dashboard");
+
+    } catch (error) {
+      console.error("Login Error:", error);
+      setError("Something went wrong. Please try again.");
     }
-
-    // Save user details
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    // Zustand store update
-    login(data.user);
-
-    if (data.requirePasswordChange) {
-  navigate("/change-password"); // Create this route/page
-} else {
-  navigate("/dashboard");
-}
-
-  } catch (error) {
-    console.error("Login Error:", error);
-    setError("Something went wrong. Please try again.");
-  }
-};
+  };
 
 
   return (

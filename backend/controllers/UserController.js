@@ -26,11 +26,10 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
 
   const plainPassword = crypto.randomBytes(8).toString('hex'); // 16-char random password
-  const hashedPassword = await bcrypt.hash(plainPassword, 10);
-console.log(hashedPassword)
+
   await UserAuth.create({
     UserId: user._id,
-    Password: hashedPassword,
+    Password: plainPassword,
     AutogenPass: true,
   });
 
@@ -52,8 +51,8 @@ console.log(hashedPassword)
       subject: `Login Credentials`,
       message,
     });
-    
-  sendToken(user, 201, res);
+
+    sendToken(user, 201, res);
   }
   catch (error) {
     return next(new ErrorHandler("Failed to send email", 500));
@@ -148,8 +147,8 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 400)
     );
   }
- 
-  await UserAuth.deleteOne({ UserId: user._id});
+
+  await UserAuth.deleteOne({ UserId: user._id });
   await user.remove();
 
   res.status(200).json({

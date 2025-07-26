@@ -3,7 +3,8 @@ import TicketService from '../../services/TicketService'; // Adjust if needed
 
 const KanbanBoard = () => {
   const ITEMS_PER_PAGE = 10;
-  const userId = "687b6217fece4c25bb1f6f01"; // Static for now
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user?._id || ""; // Static for now
 
   const [pages, setPages] = useState({
     active: 1,
@@ -26,18 +27,25 @@ const KanbanBoard = () => {
         const response = await TicketService.getTickets(userId);
         const data = response.count;
         console.log(data)
+
+        const filteredPlanned = (data.InProgressTickets || []).filter(
+          (ticket) => 
+            ticket.assignee === userId && ticket.creator === userId
+        )
         setTickets({
           active: data.OpenTickets || [],
           overdue: data.PendingTickets || [],
-          planned: data.InProgressTickets || [],
+          planned: filteredPlanned || [],
           completed: data.CompletedTickets || [],
         });
       } catch (error) {
         console.error("Error fetching tickets:", error);
       }
     };
-
-    getTickets();
+    if(userId){
+      getTickets();
+    }
+    
   }, [userId]);
 
 

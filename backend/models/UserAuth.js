@@ -22,7 +22,7 @@ const UserAuthSchema = new mongoose.Schema({
     PasswordResetExpire: Date,
 })
 
-//Hash the password before saving
+// Hash the password before saving
 UserAuthSchema.pre("save", async function (next) {
     if (!this.isModified("Password"))
         return next();

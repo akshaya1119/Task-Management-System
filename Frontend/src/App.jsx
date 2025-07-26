@@ -23,6 +23,7 @@ import PublicRoutes from './routes/PublicRoute';
 import ProtectedRoutes from './routes/ProtectedRoute';
 import SearchResults from './pages/Search/AdvancedSearch';
 import Master from './pages/Masters/Master';
+import ChangePassword from './pages/Login/ChangePassword';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           }
         >
           {/* Dashboard nested under /dashboard */}
+          <Route path="/changepassword" element={<ChangePassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/add-ticket" element={<CreateTicket />} />
           <Route path="/dashboard/all-ticket" element={<ViewTicket />} />

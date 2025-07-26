@@ -134,13 +134,14 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     if (!user) {
         return next(new ErrorHandler("Invalid email or password", 401));
     }
-    const userAuth = await Auth.findOne({UserId: user._id}).select("+password")
-    if(!userAuth){
+    const userAuth = await Auth.findOne({ UserId: user._id }).select("+Password")
+    if (!userAuth) {
         return next(new ErrorHandler("Authentication details not found", 401));
     }
     const isPasswordMatched = await userAuth.comparePassword(password);
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid email or password", 401));
     }
-    sendToken(user, 200, res);
+
+    sendToken(user, userAuth.AutogenPass, 200, res);
 });
