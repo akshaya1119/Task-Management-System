@@ -1,92 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import NotificationService from '../../services/NotificationService';  // Adjust the path if necessary
+import NotificationService from '../../services/NotificationService';
 
-const NotificationBox = ({ onClose, userId }) => {
+const NotificationBox = ({ isOpen, onClose, userId }) => {
   const [notifications, setNotifications] = useState([]);
 
-  // Fetch notifications when the component is mounted
   useEffect(() => {
+    if (!userId || !isOpen) return;
+
     const fetchNotifications = async () => {
       try {
-        const fetchedNotifications = await NotificationService.getNotifications(userId);
-        setNotifications(fetchedNotifications.allNotifications);  // Assuming response is an array of notifications
+        const { allNotifications } = await NotificationService.getNotifications(userId);
+        setNotifications(allNotifications || []);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
     };
 
     fetchNotifications();
-  }, [userId]);  // Re-fetch when userId changes
+  }, [userId, isOpen]);
 
-  // Mark a single notification as read
-  const MarkAsRead = async (notificationId) => {
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const markAsRead = async (notificationId) => {
     try {
-      await NotificationService.markAsRead(notificationId); // Call API to mark as read
-      // Update the local state by marking the notification as read
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, isRead: true }
-            : notification
-        )
+      await NotificationService.markAsRead(notificationId);
+      setNotifications((prev) =>
+        prev.map((n) => n.id === notificationId ? { ...n, isRead: true } : n)
       );
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
   };
 
-  // Mark all notifications as read
-  const MarkAllAsRead = async () => {
+  const markAllAsRead = async () => {
     try {
-      await NotificationService.markAllAsRead(userId); // Call API to mark all as read
-      // Update the local state to set all notifications as read
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((notification) => ({
-          ...notification,
-          isRead: true,
-        }))
-      );
+      await NotificationService.markAllAsRead(userId);
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (error) {
-      console.error("Error marking all notifications as read:", error);
+      console.error("Error marking all as read:", error);
     }
   };
 
   return (
-    <div className="absolute top-16 right-4 w-72 bg-white text-black rounded-lg shadow-lg p-4 z-50">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="font-semibold text-lg">Notifications</h2>
-        <button onClick={onClose} className="text-red-500 font-bold text-xl">×</button>
-        <button
-          onClick={MarkAllAsRead}
-          className="text-blue-500 font-bold text-sm"
-        >
-          Mark All as Read
-        </button>
+    <>
+      {/* Offcanvas Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-40"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Offcanvas Panel */}
+      <div className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-lg font-semibold">Notifications</h2>
+          <button
+            onClick={markAllAsRead}
+            className="text-sm text-blue-500 hover:underline"
+          >
+            Mark All as Read
+          </button>
+          <button onClick={onClose} className="text-xl font-bold text-gray-600 hover:text-red-500">×</button>
+        </div>
+        <div className="p-4 space-y-2 overflow-y-auto h-[calc(100%-64px)]">
+          {notifications.length ? (
+            notifications.map((n, index) => (
+              <div
+                key={index}
+                className={`p-3 rounded shadow-sm ${n.isRead ? 'bg-gray-100' : 'bg-blue-50 border-l-4 border-blue-400'}`}
+              >
+                <div>{n.message}</div>
+                {!n.isRead && (
+                  <button
+                    onClick={() => markAsRead(n.id)}
+                    className="text-sm text-blue-500 hover:underline mt-1"
+                  >
+                    Mark as Read
+                  </button>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-gray-500">No notifications available.</div>
+          )}
+        </div>
       </div>
-      <div className="space-y-2 max-h-64 overflow-y-auto">
-        {/* Render notifications dynamically */}
-        {notifications.length > 0 ? (
-          notifications.map((notification, index) => (
-            <div
-              key={index}
-              className={`bg-gray-100 p-2 rounded ${notification.isRead ? 'bg-gray-200' : ''}`}
-            >
-              <div>{notification.message}</div>
-              {!notification.isRead && (
-                <button
-                  onClick={() => MarkAsRead(notification.id)}
-                  className="text-sm text-blue-500"
-                >
-                  Mark as Read
-                </button>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="bg-gray-100 p-2 rounded">No notifications available.</div>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 

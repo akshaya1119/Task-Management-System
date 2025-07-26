@@ -42,7 +42,6 @@ function App() {
         >
           <Route path="/login" element={<Login />} />
           <Route path="/forgot" element={<ForgetPassword />} />
-        <Route path="/changepassword" element={<ChangePassword />} />
         </Route>
 
         {/* Protected Routes with layout (for both /dashboard/* and /profile) */}
@@ -54,6 +53,7 @@ function App() {
           }
         >
           {/* Dashboard nested under /dashboard */}
+          <Route path="/changepassword" element={<ChangePassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/add-ticket" element={<CreateTicket />} />
           <Route path="/dashboard/all-ticket" element={<ViewTicket />} />

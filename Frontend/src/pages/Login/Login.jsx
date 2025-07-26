@@ -48,22 +48,21 @@ const Login = () => {
         localStorage.setItem("token", data.token);
       }
 
-      // Save user details
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // Save user details with password flags
+      const userWithFlags = {
+        ...data.user,
+        isAutoGenPass: data.isAutoGenPass || false,
+        requirePasswordChange: data.requirePasswordChange || false
+      };
+      localStorage.setItem("user", JSON.stringify(userWithFlags));
 
       // Zustand store update
-      login(data.user);
-      if (data.isAutoGenPass === true) {
-        console.log("Navigating to change-password", data);
-
-        navigate("/changepassword")
-      }
-
-      if (data.isAutoGenPass === true || data.requirePasswordChange) {
-        navigate("/changepassword"); // Create this route/page
-      } else {
-        // navigate("/dashboard");
-      }
+      login(userWithFlags);
+      
+      console.log("Login successful, user data:", userWithFlags);
+      
+      // Navigate to dashboard - ProtectedRoute will handle redirection to change password if needed
+      navigate("/dashboard");
 
     } catch (error) {
       console.error("Login Error:", error);

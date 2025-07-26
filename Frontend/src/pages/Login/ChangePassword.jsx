@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../../stores/authStore';
 
 const ChangePassword = () => {
   const [userId, setUserId] = useState('');
@@ -8,7 +10,23 @@ const ChangePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  console.log("sdf")
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+
+  const handleSkipForNow = () => {
+    // Update user data to temporarily skip password change for this session
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    if (currentUser) {
+      const updatedUser = { 
+        ...currentUser, 
+        skipPasswordChange: true // Temporary flag for this session
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      login(updatedUser);
+    }
+    
+    navigate('/dashboard');
+  };
 
   useEffect(() => {
     // Load user from localStorage
@@ -37,16 +55,32 @@ const ChangePassword = () => {
 
     try {
       setLoading(true);
-      const response = await axios.put(`/users/${userId}`, {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
         oldPassword,
         newPassword,
         confirmPassword,
+      }, {
+        withCredentials: true
       });
 
-      setMessage({ type: 'success', text: response.data.message || 'Password updated successfully' });
+      setMessage({ type: 'success', text: response.data.message || 'Password updated successfully! Redirecting to dashboard...' });
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      
+      // Update user data to reflect that password is no longer auto-generated
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      if (currentUser) {
+        const updatedUser = { ...currentUser, isAutoGenPass: false, requirePasswordChange: false };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        login(updatedUser);
+      }
+      
+      // Redirect to dashboard after successful password change
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000); // 2 second delay to show success message
+      
     } catch (error) {
       setMessage({
         type: 'error',
@@ -60,6 +94,14 @@ const ChangePassword = () => {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
       <h2 className="text-xl font-semibold mb-4 text-center text-gray-800">Change Password</h2>
+      
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-sm text-blue-800">
+          <strong>Security Recommendation:</strong> You're currently using a temporary or auto-generated password. 
+          For better security, we recommend changing it to something personal and memorable. 
+          You can also skip this step and change it later if you prefer.
+        </p>
+      </div>
 
       {message.text && (
         <div
@@ -105,11 +147,22 @@ const ChangePassword = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none mb-3"
         >
           {loading ? 'Updating...' : 'Change Password'}
         </button>
       </form>
+
+      {/* Skip Option */}
+      <div className="mt-4 text-center">
+        <button
+          onClick={handleSkipForNow}
+          className="text-sm text-gray-600 hover:text-gray-800 underline focus:outline-none"
+          disabled={loading}
+        >
+          Skip for now, I'll change it later
+        </button>
+      </div>
     </div>
   );
 };
